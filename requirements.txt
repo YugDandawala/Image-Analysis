@@ -1,0 +1,29 @@
+# ===== Universal Image Analysis Pipeline Dependencies =====
+
+# --- Backend Framework ---
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+python-dotenv>=1.0.0
+aiofiles>=24.0.0
+
+# --- Data Validation ---
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# --- Google Gemini VLM ---
+google-genai>=1.0.0
+
+# --- LangGraph Orchestration ---
+langgraph>=0.2.0
+langchain-core>=0.3.0
+
+# --- Image Processing ---
+opencv-python-headless>=4.10.0
+Pillow>=10.0.0
+numpy>=1.26.0
+
+docling>=2.0.0
+
+# --- SSE Streaming ---
+sse-starlette>=2.0.0
