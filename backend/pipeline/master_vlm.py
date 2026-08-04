@@ -15,6 +15,7 @@ async def generate_response(
     assembled_prompt: str,
     image_path: str,
     enhanced_image_path: str = None,
+    focus_crop_path: str = None,
 ) -> str:
     """Generate the final conversational response from the Master VLM.
 
@@ -22,6 +23,7 @@ async def generate_response(
         assembled_prompt: The fully assembled context prompt from Layer 3.
         image_path: Path to the original image.
         enhanced_image_path: Optional path to an enhanced image (medical).
+        focus_crop_path: Optional path to high-res focus crop tile.
 
     Returns:
         The VLM's response text.
@@ -32,7 +34,7 @@ async def generate_response(
     # Build content parts
     parts = [types.Part.from_text(text=assembled_prompt)]
 
-    # Attach original image
+    # Attach working image
     original_bytes = Path(image_path).read_bytes()
     original_mime = _get_mime_type(image_path)
     parts.append(types.Part.from_bytes(data=original_bytes, mime_type=original_mime))
@@ -42,6 +44,12 @@ async def generate_response(
         enhanced_bytes = Path(enhanced_image_path).read_bytes()
         enhanced_mime = _get_mime_type(enhanced_image_path)
         parts.append(types.Part.from_bytes(data=enhanced_bytes, mime_type=enhanced_mime))
+
+    # Attach high-res focus crop tile if available (attention zoom)
+    if focus_crop_path and Path(focus_crop_path).exists():
+        crop_bytes = Path(focus_crop_path).read_bytes()
+        crop_mime = _get_mime_type(focus_crop_path)
+        parts.append(types.Part.from_bytes(data=crop_bytes, mime_type=crop_mime))
 
     candidate_models = [settings.MASTER_VLM_MODEL, "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.6-flash"]
     seen = set()

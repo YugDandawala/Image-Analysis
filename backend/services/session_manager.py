@@ -24,6 +24,10 @@ class Session:
         self.enhanced_image_path: Optional[str] = None
         self.quality_info: Optional[dict[str, Any]] = None
         self.restored_image_path: Optional[str] = None
+        self.annotated_image_path: Optional[str] = None
+        self.annotated_url: Optional[str] = None
+        self.focus_crop_path: Optional[str] = None
+        self.verification_report: Optional[dict[str, Any]] = None
         self.assembled_context: Optional[str] = None
 
         # Conversation history

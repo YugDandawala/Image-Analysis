@@ -17,6 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from backend.config import get_settings
 from backend.api.upload import router as upload_router
 from backend.api.chat import router as chat_router
+from backend.api.report import router as report_router
 from backend.models.schemas import HealthResponse
 from backend.services.session_manager import session_manager
 
@@ -75,10 +76,12 @@ settings.upload_path.mkdir(parents=True, exist_ok=True)
 app.mount("/temp", StaticFiles(directory=str(settings.upload_path)), name="temp")
 
 
+
 # ── Routers ─────────────────────────────────────────────────────────
 
 app.include_router(upload_router, prefix="/api", tags=["Upload"])
 app.include_router(chat_router, prefix="/api", tags=["Chat"])
+app.include_router(report_router, prefix="/api", tags=["Report"])
 
 
 # ── Health Check ────────────────────────────────────────────────────

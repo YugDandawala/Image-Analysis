@@ -34,10 +34,20 @@ class Settings(BaseSettings):
     # --- Session Management ---
     SESSION_TTL_MINUTES: int = 60
 
-    # --- Model IDs ---
+    # --- Gemini Model IDs ---
     TRIAGE_MODEL: str = "gemini-3.5-flash-lite"
     UI_GROUNDING_MODEL: str = "gemini-3.5-flash"
     MASTER_VLM_MODEL: str = "gemini-3.5-flash"
+
+    # --- Vision & Feature Models ---
+    HUGGINGFACE_API_KEY: str = ""
+    SAM2_MODEL_ID: str = "facebook/sam2-hiera-large"
+    DINOV2_MODEL_ID: str = "facebook/dinov2-base"
+
+    # --- Advanced Pipeline Flags ---
+    ENABLE_VISUAL_OVERLAY: bool = True
+    ENABLE_FOCUS_ZOOM: bool = True
+    ENABLE_CLAIM_VERIFICATION: bool = True
 
     # --- Computed Paths ---
     @property

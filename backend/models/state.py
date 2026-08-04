@@ -26,8 +26,13 @@ class PipelineState(TypedDict, total=False):
     category: str                       # medical | ui_screenshot | document | general
     triage_confidence: float            # Classification confidence score
 
-    # ── Layer 2: Module Outputs ─────────────────────────────────────
+    # ── Layer 2: Module Outputs & Visual Extensions ───────────────
     enhanced_image_path: Optional[str]  # Path to CLAHE-enhanced image (medical)
+    annotated_image_path: Optional[str] # Path to bounding box annotated preview image
+    annotated_url: Optional[str]        # Web URL for annotated preview
+    focus_crop_path: Optional[str]      # Path to 100% native resolution focus crop tile
+    sam_segmentation: Optional[dict]    # SAM 2 / OpenCV segmentation polygon data
+    verification_report: Optional[dict] # Factual claim verifier output report
     metadata: dict[str, Any]            # Structured data from specialist modules
                                         #   - medical: enhancement params
                                         #   - ui_screenshot: UIElement list

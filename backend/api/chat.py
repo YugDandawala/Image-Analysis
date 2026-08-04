@@ -74,6 +74,10 @@ async def chat(request: ChatRequest):
                         session.enhanced_image_path = event.get("enhanced_image_path", session.enhanced_image_path)
                         session.restored_image_path = event.get("restored_image_path", session.restored_image_path)
                         session.quality_info = event.get("quality_info", session.quality_info)
+                        session.annotated_image_path = event.get("annotated_image_path", session.annotated_image_path)
+                        session.annotated_url = event.get("annotated_url", session.annotated_url)
+                        session.focus_crop_path = event.get("focus_crop_path", session.focus_crop_path)
+                        session.verification_report = event.get("verification_report", session.verification_report)
                         session.mark_complete()
 
             # Final: send done event and save assistant message
