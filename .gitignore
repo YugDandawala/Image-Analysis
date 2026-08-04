@@ -56,6 +56,9 @@ backend/temp/
 htmlcov/
 .tox/
 .nox/
+.cache/
+*.csv
+*.tsv
 
 # ==========================================
 # Frontend (Node.js / React / Vite)
