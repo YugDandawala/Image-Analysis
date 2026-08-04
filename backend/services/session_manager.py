@@ -22,6 +22,8 @@ class Session:
         self.category: Optional[str] = None
         self.metadata: dict[str, Any] = {}
         self.enhanced_image_path: Optional[str] = None
+        self.quality_info: Optional[dict[str, Any]] = None
+        self.restored_image_path: Optional[str] = None
         self.assembled_context: Optional[str] = None
 
         # Conversation history

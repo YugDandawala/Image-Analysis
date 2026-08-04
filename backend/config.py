@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     CLAHE_CLIP_LIMIT: float = 3.0
     CLAHE_GRID_SIZE: int = 8
 
+    # --- Quality & Clarity Enhancer ---
+    BLUR_THRESHOLD: float = 120.0
+    MIN_DIMENSION_THRESHOLD: int = 800
+    AUTO_ENHANCE_QUALITY: bool = True
+
     # --- Session Management ---
     SESSION_TTL_MINUTES: int = 60
 

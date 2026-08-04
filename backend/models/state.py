@@ -18,6 +18,10 @@ class PipelineState(TypedDict, total=False):
     image_path: str                     # Path to the uploaded image on disk
     user_prompt: str                    # The user's question/prompt
 
+    # ── Layer 0: Quality Assessment & Pre-Enhancement ───────────────
+    quality_info: Optional[dict[str, Any]] # Quality metrics (blur, resolution, contrast)
+    restored_image_path: Optional[str]     # Path to clarity/resolution enhanced image
+
     # ── Layer 1: Triage Output ──────────────────────────────────────
     category: str                       # medical | ui_screenshot | document | general
     triage_confidence: float            # Classification confidence score

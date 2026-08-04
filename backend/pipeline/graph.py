@@ -11,6 +11,7 @@ Follow-up questions bypass the full graph and go directly to the VLM.
 import asyncio
 from typing import AsyncGenerator
 from backend.models.state import PipelineState
+from backend.pipeline.quality_enhancer import analyze_image_quality, enhance_image_clarity
 from backend.pipeline.triage import classify_image
 from backend.pipeline.medical import enhance_medical_image
 from backend.pipeline.ui_grounding import detect_ui_elements
@@ -43,11 +44,28 @@ async def run_pipeline(
     session = session_manager.get_session(session_id)
     metadata = {}
     enhanced_image_path = None
+    working_image_path = image_path
+    restored_image_path = None
+    quality_info = None
+
+    # ── Layer 0: Quality Assessment & Pre-Enhancement ───────────────
+    yield {"type": "stage", "stage": "Inspecting image clarity & sharpness"}
+    try:
+        quality_info = await analyze_image_quality(image_path)
+        if quality_info.get("needs_enhancement"):
+            yield {"type": "stage", "stage": "Enhancing resolution & fixing image blur"}
+            clarity_result = await enhance_image_clarity(image_path, session_id, quality_info)
+            restored_image_path = clarity_result.get("restored_image_path")
+            if restored_image_path:
+                working_image_path = restored_image_path
+                yield {"type": "stage", "stage": "Image sharpness and resolution restored"}
+    except Exception as e:
+        print(f"⚠️ Quality inspection encountered issue: {e}")
 
     # ── Layer 1: Triage ─────────────────────────────────────────────
     yield {"type": "stage", "stage": "Identifying image domain"}
     try:
-        triage_result = await classify_image(image_path)
+        triage_result = await classify_image(working_image_path)
         category = triage_result["category"]
         confidence = triage_result["confidence"]
     except Exception as e:
@@ -62,7 +80,7 @@ async def run_pipeline(
     if category == "medical":
         yield {"type": "stage", "stage": "Enhancing scan contrast"}
         try:
-            med_result = await enhance_medical_image(image_path, session_id)
+            med_result = await enhance_medical_image(working_image_path, session_id)
             metadata = med_result
             enhanced_image_path = med_result.get("enhanced_image_path")
         except Exception as e:
@@ -72,7 +90,7 @@ async def run_pipeline(
     elif category == "ui_screenshot":
         yield {"type": "stage", "stage": "Detecting interface elements"}
         try:
-            ui_result = await detect_ui_elements(image_path)
+            ui_result = await detect_ui_elements(working_image_path)
             metadata = ui_result
         except Exception as e:
             metadata = {"error": str(e), "elements": [], "layout_description": "UI detection failed."}
@@ -81,7 +99,7 @@ async def run_pipeline(
     elif category == "document":
         yield {"type": "stage", "stage": "Extracting text and structure"}
         try:
-            doc_result = await extract_document_content(image_path)
+            doc_result = await extract_document_content(working_image_path)
             metadata = doc_result
         except Exception as e:
             metadata = {"error": str(e), "full_text": "", "markdown": "", "tables": []}
@@ -90,7 +108,7 @@ async def run_pipeline(
     elif category == "general":
         yield {"type": "stage", "stage": "Processing image content"}
         try:
-            gen_result = await process_general_image(image_path)
+            gen_result = await process_general_image(working_image_path)
             metadata = gen_result
         except Exception as e:
             metadata = {"error": str(e), "description": "General processing failed."}
@@ -113,7 +131,7 @@ async def run_pipeline(
     try:
         response_text = await generate_response(
             assembled_prompt=assembled_prompt,
-            image_path=image_path,
+            image_path=working_image_path,
             enhanced_image_path=enhanced_image_path,
         )
     except Exception as e:
@@ -136,6 +154,8 @@ async def run_pipeline(
         "category": category,
         "metadata": metadata,
         "enhanced_image_path": enhanced_image_path,
+        "restored_image_path": restored_image_path,
+        "quality_info": quality_info,
     }
 
 
